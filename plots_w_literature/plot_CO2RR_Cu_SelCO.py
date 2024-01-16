@@ -28,8 +28,8 @@ if __name__ == "__main__":
 
     # effectively used model parameters
     cdict = {
-        'CO_111':{'D':cD_CO, 'H':cH_CO, 'dG':0.1, 'ddG':ddG_des, 'ddGred':dG_red_CO},
-        #'CO_211':{'D':cD_CO, 'H':cH_CO, 'dG':0.4, 'ddG':ddG_des, 'ddGred':dG_red_CO},
+        'CO_111':{'cD':[cD_CO], 'cH':[cH_CO], 'dG':[0.1], 'ddG_des':[ddG_des], 'ddG_red':[dG_red_CO]},
+        #'CO_211':{'cD':cD_CO, 'cH':cH_CO, 'dG':0.4, 'ddG_des':ddG_des, 'ddG_red':dG_red_CO},
         }
 
     # calculation instructions
@@ -50,8 +50,8 @@ if __name__ == "__main__":
         
         datafile = "model_data_examples_%s.pkl"%k
         # output: i_model, eng_des, eng_ads, eng_red, U_SHE, Dx, Lx, roughness, *, A, B, C, D, p1, p2, conc1
-        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=[cdict[k]['ddGred']], \
-            Ds=[cdict[k]['D']], Lxs=[50e-4], **sdict[k])
+        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=cdict[k]['ddG_red'], \
+            Ds=cdict[k]['cD'], Lxs=[50e-4], **sdict[k])
         # save roughness vs. sel 
         sel = dat[:,13]/ dat[:,[13,14]].sum(axis=1)
         out_plot.update({k:np.array([dat[:,7], sel]).T})
@@ -125,9 +125,9 @@ if __name__ == "__main__":
         #datafile = "model_data_examples_CO_pot_alpha_hand.pkl"
         datafile = "model_data_examples_CO_pot.pkl"
         # output: i_model, eng_des, eng_ads, eng_red, U_SHE, Dx, Lx, roughness, *, A, B, C, D, p1, p2, conc1
-        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=[1.5], #][cdict[k]['ddGred']], \
+        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=[1.5], #][cdict[k]['ddG_red']], \
         #dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=[1.37], \
-            Ds=[cdict[k]['D']], Lxs=[50e-4], Us=np.arange(-1.6,-0.6,0.05), rghs=[rgh], mdls=[1])
+            Ds=cdict[k]['cD'], Lxs=[50e-4], Us=np.arange(-1.6,-0.6,0.05), rghs=[rgh], mdls=[1])
         # save roughness vs. sel 
         sel = dat[:,13]/ dat[:,[13,14]].sum(axis=1)
         ind = (np.isnan(sel) == False)

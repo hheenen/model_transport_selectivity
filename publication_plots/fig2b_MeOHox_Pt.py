@@ -1,50 +1,56 @@
 #!/usr/bin/env python
 
+"""
+
+This script runs model for fig 2b in manuscript:
+Methanol oxidation
+
+"""
+
 from header import *
+
+    
+#################################
+### Parameters for simulation ###
+#################################
+
+# dG --> G_des - G_ads 
+ddG_des = 0.165      # guess
+dG_red = 1.1         # guess
+
+# Formaldehyde vs. HCOOH & CO2 --> digitize data
+cD_Fmdh = 17.541e-10   # m2/s (10.1021/ie201944h0) fits to average of 10.3390/atmos11101057 
+cH_Fmdh = 1.99e-4      # atm / M (10.1016/j.atmosenv.2010.05.044)
+dG_Fmdh = [0.0]       # guess
+
+# used model parameters
+cdict = {'cD':[cD_Fmdh], 'cH':[cH_Fmdh], 'dG':[dG_Fmdh[0]], \
+    'ddG_des':[ddG_des], 'ddG_red':[dG_red]}
+
+# calculation parameters
+sdict = {"Us":[-1.60], "rghs":np.arange(0.1,0.6,0.05), "mdls":[1]}
+
 
 
 if __name__ == "__main__":
 
-    #################################
-    ### Parameters for simulation ###
-    #################################
 
-    # dG --> G_des - G_ads 
-    ddG_des = 0.165
-    dG_red = 1.1
+#   def make_plot_MeOHox_Pt():
+#   """
+#     helper-function to make full plot
 
-    # Formaldehyde vs. HCOOH & CO2 --> digitize data
-    cD_Fmdh = 17.541e-10   # m2/s (10.1021/ie201944h0) fits to average of 10.3390/atmos11101057 
-    cH_Fmdh = 1.99e-4      # atm / M (10.1016/j.atmosenv.2010.05.044)
-    dG_Fmdh = [0.0]       # guess
+#   """
+#   pass
 
-    # effectively used model parameters
-    cdict = {'Fmdh':  {'cD':[cD_Fmdh], 'cH':[cH_Fmdh], 'dG':[dG_Fmdh[0]], 'ddG_des':[ddG_des], 'ddG_red':[dG_red]},
-        }
-
-    # calculation instructions
-    sdict = {'Fmdh':{"Us":[-1.60], "rghs":np.arange(0.1,0.6,0.05), "mdls":[1]},
-        }
     
 
     ########################
     ### Simulation block ###
     ########################
 
-    out_plot = {}
-    for k in sdict:
-        dGdes , dGads = get_adsdes_engs(cdict[k])
-
-        print(k, dGdes, dGads)
-
-        datafile = "model_data_examples_%s.pkl"%k
-        # i_model, eng_des, eng_ads, eng_red, U_SHE, Dx, Lx, roughness, *, A, B, C, D, p1, p2, conc1
-        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=cdict[k]['ddG_red'], \
-            Ds=cdict[k]['cD'], Lxs=[50e-4], **sdict[k])
-        
-        sel = dat[:,13]/ dat[:,[13,14]].sum(axis=1)
-        out_plot.update({k:np.array([dat[:,7], sel]).T})
-    
+    out_plot = run_model_for_example({'Fmdh':cdict}, {'Fmdh':sdict})
+    out_plot['Fmdh'][:,0] /= out_plot['Fmdh'][:,0].min() # relative roughness
+    out_plot['Fmdh'][:,1] *= 100.                        # convert percentage
 
     ##########################################
     ### Plot simulation against experiment ###
@@ -54,9 +60,11 @@ if __name__ == "__main__":
     selH2COn, selH2COp = load_H2CO_Pt_data()
     selH2COn[:,0] /= selH2COn[:,0].min() # relative loading / roughness
     selH2COp[:,0] /= selH2COp[:,0].min() # relative loading / roughness
-    out_plot['Fmdh'][:,0] /= out_plot['Fmdh'][:,0].min()
-    out_plot['Fmdh'][:,1] *= 100.
-        
+
+    assert False
+    # ( ) sort out central data here!
+    # ( ) make plot function and have central
+
     ls_args = {r'neg scan':dict(ls='--', marker='x', color='gray'), 
                r'pos scan':dict(ls='--', marker='x', color='k'), 
                r'Pt-NP':dict(ls='--', marker='x', color='k'), 

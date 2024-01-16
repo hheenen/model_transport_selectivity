@@ -288,7 +288,7 @@ def _load_data_paper(folders):
     
 
 def load_H2CO_Pt_data():
-    abs_path = "/Users/heenen/Nextcloud/Projects_FHI/kinetics_transport/model_perspective/experimental_reference" 
+    abs_path = "/Users/heenen/Nextcloud/Projects_FHI/kinetics_transport/model_transport_selectivity/experimental_reference" 
     dat = np.loadtxt(abs_path+"/dat_H2CO_Pt.txt")
     dat2 = np.loadtxt(abs_path+"/dat_H2CO_Pt_2.txt")
     header = ["Pt loading", "H2CO", "HCOOH", "CO2"]

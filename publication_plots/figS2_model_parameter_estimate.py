@@ -6,36 +6,7 @@ This script only produces 1D cuts for each parameter
 
 """
 
-# general imports
-import os, sys
-from copy import deepcopy
-import numpy as np
-import matplotlib.pyplot as plt
-
-# package imports
-sys.path.append("../.")
-from model_Sel_DRAR.sim_diffusion_selectivity import sample_data
-from model_Sel_DRAR.model_plots import plot_xy, plot_xy_ax, set_plotting_env, \
-                                        writefig, golden_ratio, clrs
-
-
-def get_adsdes_engs(cd):
-    """
-      helper-function to convert barriers to thermodynamics as barriers 
-      (see SI)
-
-    """
-    dG = cd['dG'][0]; ddG = cd['ddG_des'][0]
-    
-    cH = cd['cH'][0]; kb = 8.6173e-5
-    acE = kb*300*np.log(cH) # energy penalty to emulate activity coefficient
-    if dG > 0:
-      # dGdes = dG+ddG-acE; dGads = ddG
-        dGdes = dG+ddG; dGads = max(ddG-acE, 0)
-    else:
-      # dGdes = ddG-acE; dGads = -1*dG+ddG
-        dGdes = ddG; dGads = (-1*dG+ddG)-acE
-    return(dGdes, dGads)
+from header import *
 
 
 def screen_model_parameters(param_std, ranges):

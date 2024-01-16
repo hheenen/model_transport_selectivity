@@ -33,21 +33,21 @@ if __name__ == "__main__":
     # dG --> G_des - G_ads 
 
     # Acetaldehyde on Cu
-    cD_Acdh = 13.75e-10 # m2/s (10.3390/atmos11101057 average of two)
-    cH_Acdh = 0.0759    # atm /mol (10.1016/S0045-6535(00)00505-1)
+    cD_Acdh = [13.75e-10] # m2/s (10.3390/atmos11101057 average of two)
+    cH_Acdh = [0.0759]    # atm /mol (10.1016/S0045-6535(00)00505-1)
     dG_Acdh = [-0.6]    # 10.1002/anie.201508851
-    dG_Acdh = -0.14 #-0.12, -0.15, -0.16 
-    ddGred_Acdh = 0.96 #0.92
-    ddG_des_Acdh = 0.165 # 0.1, 0.16, 0.165
+    dG_Acdh = [-0.14] #-0.12, -0.15, -0.16 
+    ddGred_Acdh = [0.96] #0.92
+    ddG_des_Acdh = [0.165] # 0.1, 0.16, 0.165
 
     # effectively used model parameters
-    cdict = {'Acdh_1':  {'D':cD_Acdh, 'H':cH_Acdh, 'dG':dG_Acdh, 'ddG':ddG_des_Acdh, 'ddGred':ddGred_Acdh}, # Acdh for reasonable adsorption rates
-             'Acdh_3':  {'D':cD_Acdh, 'H':cH_Acdh, 'dG':dG_Acdh, 'ddG':ddG_des_Acdh, 'ddGred':ddGred_Acdh}, # Acdh for reasonable adsorption rates
-             'Acdh_5':  {'D':cD_Acdh, 'H':cH_Acdh, 'dG':dG_Acdh, 'ddG':ddG_des_Acdh, 'ddGred':ddGred_Acdh}, # Acdh for reasonable adsorption rates
-             'Acdh_10':  {'D':cD_Acdh, 'H':cH_Acdh, 'dG':dG_Acdh, 'ddG':ddG_des_Acdh, 'ddGred':ddGred_Acdh}, # Acdh for reasonable adsorption rates
-             'Acdh_87':  {'D':cD_Acdh, 'H':cH_Acdh, 'dG':dG_Acdh, 'ddG':ddG_des_Acdh, 'ddGred':ddGred_Acdh}, # Acdh for reasonable adsorption rates
-             'Acdh_390':  {'D':cD_Acdh, 'H':cH_Acdh, 'dG':dG_Acdh, 'ddG':ddG_des_Acdh, 'ddGred':ddGred_Acdh}, # Acdh for reasonable adsorption rates
-             #'Acdh':  {'D':cD_Acdh, 'H':cH_Acdh, 'dG':dG_Acdh[0], 'ddG':ddG_des, 'ddGred':dG_red},
+    cdict = {'Acdh_1':  {'cD':cD_Acdh, 'cH':cH_Acdh, 'dG':dG_Acdh, 'ddG_des':ddG_des_Acdh, 'ddG_red':ddGred_Acdh}, # Acdh for reasonable adsorption rates
+             'Acdh_3':  {'cD':cD_Acdh, 'cH':cH_Acdh, 'dG':dG_Acdh, 'ddG_des':ddG_des_Acdh, 'ddG_red':ddGred_Acdh}, # Acdh for reasonable adsorption rates
+             'Acdh_5':  {'cD':cD_Acdh, 'cH':cH_Acdh, 'dG':dG_Acdh, 'ddG_des':ddG_des_Acdh, 'ddG_red':ddGred_Acdh}, # Acdh for reasonable adsorption rates
+             'Acdh_10':  {'cD':cD_Acdh, 'cH':cH_Acdh, 'dG':dG_Acdh, 'ddG_des':ddG_des_Acdh, 'ddG_red':ddGred_Acdh}, # Acdh for reasonable adsorption rates
+             'Acdh_87':  {'cD':cD_Acdh, 'cH':cH_Acdh, 'dG':dG_Acdh, 'ddG_des':ddG_des_Acdh, 'ddG_red':ddGred_Acdh}, # Acdh for reasonable adsorption rates
+             'Acdh_390':  {'cD':cD_Acdh, 'cH':cH_Acdh, 'dG':dG_Acdh, 'ddG_des':ddG_des_Acdh, 'ddG_red':ddGred_Acdh}, # Acdh for reasonable adsorption rates
+             #'Acdh':  {'cD':cD_Acdh, 'cH':cH_Acdh, 'dG':dG_Acdh[0], 'ddG_des':ddG_des, 'ddG_red':dG_red},
         }
 
     # calculation instructions
@@ -72,12 +72,10 @@ if __name__ == "__main__":
         print(k, dGdes, dGads)
 
         datafile = "model_data_examples_%s.pkl"%k
-        # i_model, eng_des, eng_ads, eng_red, U_SHE, Dx, Lx, roughness, *, A, B, C, D, p1, p2, conc1
-        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=[cdict[k]['ddGred']], \
-            Ds=[cdict[k]['D']], Lxs=[50e-4], **sdict[k])
-        
+        # output: i_model, eng_des, eng_ads, eng_red, U_SHE, Dx, Lx, roughness, *, A, B, C, D, p1, p2, conc1
+        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=cdict[k]['ddG_red'], \
+            Ds=cdict[k]['cD'], Lxs=[50e-4], **sdict[k])
         # save potential vs. sel 
-        
         sel = dat[:,13]/ dat[:,[13,14]].sum(axis=1)
         out_plot.update({k:np.array([dat[:,4], sel]).T})
     

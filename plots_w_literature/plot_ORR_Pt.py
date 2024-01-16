@@ -30,9 +30,9 @@ if __name__ == "__main__":
 
     # effectively used model parameters
     cdict = {
-             'H2O2_Pt':  {'D':cD_h2o2, 'H':cH_h2o2, 'dG':0.1, 'ddG':ddG_h2o2_des, 'ddGred':dG_red},
-             #'H2O2_Au_lo':  {'D':cD_h2o2, 'H':cH_h2o2, 'dG':dG_h2o2_Au[1], 'ddG':ddG_h2o2_des, 'ddGred':dG_red},
-             #'H2O2_Au_ho':  {'D':cD_h2o2, 'H':cH_h2o2, 'dG':dG_h2o2_Au[0], 'ddG':ddG_h2o2_des, 'ddGred':dG_red},
+             'H2O2_Pt':  {'cD':[cD_h2o2], 'cH':[cH_h2o2], 'dG':0.1, 'ddG_des':[ddG_h2o2_des], 'ddG_red':[dG_red]},
+             #'H2O2_Au_lo':  {'cD':cD_h2o2, 'cH':cH_h2o2, 'dG':dG_h2o2_Au[1], 'ddG_des':ddG_h2o2_des, 'ddG_red':dG_red},
+             #'H2O2_Au_ho':  {'cD':cD_h2o2, 'cH':cH_h2o2, 'dG':dG_h2o2_Au[0], 'ddG_des':ddG_h2o2_des, 'ddG_red':dG_red},
         }
 
     # calculation instructions
@@ -53,13 +53,12 @@ if __name__ == "__main__":
         print(k, dGdes, dGads)
 
         datafile = "model_data_examples_%s.pkl"%k
-        # i_model, eng_des, eng_ads, eng_red, U_SHE, Dx, Lx, roughness, *, A, B, C, D, p1, p2, conc1
-        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=[cdict[k]['ddGred']], \
-            Ds=[cdict[k]['D']], Lxs=[50e-4], **sdict[k])
-        
+        # output: i_model, eng_des, eng_ads, eng_red, U_SHE, Dx, Lx, roughness, *, A, B, C, D, p1, p2, conc1
+        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=cdict[k]['ddG_red'], \
+            Ds=cdict[k]['cD'], Lxs=[50e-4], **sdict[k])
+        # save roughness vs. sel 
         sel = dat[:,13]/ dat[:,[13,14]].sum(axis=1)
         out_plot.update({k:np.array([dat[:,7], sel]).T})
-        print(sel)
     
 
     ##########################################

@@ -40,6 +40,30 @@ def get_adsdes_engs(cd):
     return(dGdes, dGads)
 
 
+def run_model_for_example(cdict, sdict, okey='roughness'):
+    """
+      helper-function to make full plot
+      note: okey could be smartly seeing what is a range in sdict...
+
+    """
+    out_plot = {}
+    for k in sdict:
+        # prep energies for model input
+        dGdes , dGads = get_adsdes_engs(cdict[k])
+
+        datafile = "model_data_examples_%s.pkl"%k
+        # output: i_model, eng_des, eng_ads, eng_red, U_SHE, Dx, Lx, roughness, *, A, B, C, D, p1, p2, conc1
+        dat = sample_data(datafile, rdes=[dGdes], rads=[dGads], rred=cdict[k]['ddG_red'], \
+            Ds=cdict[k]['cD'], Lxs=[50e-4], **sdict[k])
+        # save roughness vs. index 
+        sel = dat[:,13]/ dat[:,[13,14]].sum(axis=1)
+        iout = ['i_model', 'eng_des', 'eng_ads', 'eng_red', \
+            'U_SHE', 'Dx', 'Lx', 'roughness']
+        out_plot.update({k:np.array([dat[:,iout.index(okey)], sel]).T})
+
+    return out_plot
+
+
 def add_sketch(ax, a1, a2, a3, dxy=(0.0,0.0)):
     dx, dy = dxy
     ax.annotate(a1, xy=(0.46+dx,0.5+dy), xycoords='axes fraction', ha='right', size=9)
