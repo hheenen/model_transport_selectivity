@@ -6,17 +6,21 @@ This script executes a diffusion model selectivity thingy
 
 """
 
+# general imports
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 from copy import deepcopy
+
+# package imports
 from model_Sel_CORAc.simtools import potsweep_rgh_pH
-from mkm_variable import get_mkm
 from model_Sel_CORAc.mkm.model_surfrct import get_CuAc_facet_mkm
 from model_Sel_CORAc.transport.flux_conversion import f2j, convert_TOF2flux
-from transport_iterative import solve_MS_X_analytical
-from model_plots import _plot_map
+
+from model_Sel_DRAR.transport_iterative import solve_MS_X_analytical
+from model_Sel_DRAR.mkm_variable import get_mkm
+from model_Sel_DRAR.model_plots import _plot_map
 
 
 def convert_TOF2current(pr, roughness, nel_1, nel_2):
@@ -33,11 +37,8 @@ def make_mkm_simple(eng_des, eng_ads, eng_red):
 
 def make_mkm_simple_2(eng_des, eng_ads, eng_red, k_dRI):
     mkm = get_mkm(100, k_dRI) # load standard model to manipulate
-  # print(np.array(mkm.engs0)[3:,:]) # to delete
     mkm.engs0[3] = [0.0, eng_des, eng_des-eng_ads]
     mkm.engs0[4][1] = eng_red
-    
-  # print(np.array(mkm.engs0)[3:,:]) # to delete
     return mkm
     
 
@@ -46,10 +47,6 @@ def run_model(i_model, eng_des, eng_ads, eng_red, U_SHE, Dx, Lx, roughness):
     i_diss_m = {1:2, 2:1}
     mkin = make_mkm_simple_2(eng_des, eng_ads, eng_red, k_dRI=i_model)
     
-  # from model_Sel_CORAc.mkm.mkm_energetics import adjust_SHE_engs, make_rates
-  # print(np.array(adjust_SHE_engs(mkin.engs0, U_SHE, mkin.echem))[3:,:])
-  # assert False
-
     ts, ys, pr, p0_norm, p0 = solve_MS_X_analytical(mkin, U_SHE, pH, \
         Dx, Lx, i_diss=i_diss_m[i_model], i_rads=7, roughness=roughness)
     output = {'cov':ys[-1,:], 'prod':pr, 'conc':p0}
@@ -80,13 +77,24 @@ def update_data(data, output, *args):
     data.update({key: output})
 
 
-def sample_data(datafile, rdes, rads, rred, Us, Ds, Lxs, rghs, mdls):
-
-    datafile = "bk_pkl_files/%s"%datafile
+def load_datafile(datafile):
+    # if path, load file
     if os.path.isfile(datafile):
         sim_data = load_pickle_file(datafile)
     else:
         sim_data = {}
+        # create backup-folder if not there
+        datapath = '/'.join(datafile.split('/')[:-1])
+        if not os.path.isdir(datapath):
+            os.mkdir(datapath)
+
+    return sim_data 
+
+
+def sample_data(datafile, rdes, rads, rred, Us, Ds, Lxs, rghs, mdls):
+
+    datafile = "bk_pkl_files/%s"%datafile
+    sim_data = load_datafile(datafile)
 
     out_data = []
     n_count = 0

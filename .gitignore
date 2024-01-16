@@ -165,3 +165,5 @@ cython_debug/
 *.pdf
 *.png
 *.DS_Store
+*/bk_pkl_files
+*.swp
