@@ -1,0 +1,5 @@
+# pH=?; Faradaic efficiencies; EtOH=8, Ac=4, AcdH=6
+# V_RHE     Acdh    Ac      EtOH
+-0.3324     0.0     50      50
+-0.2842     9.0     35.25   40.75 
+-0.2356     59.5    24.0    15.0
