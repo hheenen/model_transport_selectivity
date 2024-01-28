@@ -65,6 +65,10 @@ def run_model_for_example(cdict, sdict, okey='roughness'):
 
 
 def add_sketch(ax, a1, a2, a3, dxy=(0.0,0.0)):
+    """
+      helper-function to add reaction sketch into figures
+
+    """
     dx, dy = dxy
     ax.annotate(a1, xy=(0.46+dx,0.5+dy), xycoords='axes fraction', ha='right', size=9)
     ax.annotate(a2, xy=(0.65+dx,0.5+dy), xycoords='axes fraction', ha='left', size=9)
@@ -75,6 +79,10 @@ def add_sketch(ax, a1, a2, a3, dxy=(0.0,0.0)):
             arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=0.5"))
     
 def add_sketch2(ax, a1, a2, a3, dxy=(0.0,0.0)):
+    """
+      helper-function to add reaction sketch into figures
+
+    """
     dx, dy = dxy
     ax.annotate(a1, xy=(0.05+dx,0.88+dy), xycoords='axes fraction', ha='left', size=9)
     ax.annotate(a2, xy=(0.05+dx,0.6+dy), xycoords='axes fraction', ha='left', size=9)
