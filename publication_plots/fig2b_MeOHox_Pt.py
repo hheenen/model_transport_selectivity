@@ -93,7 +93,7 @@ def make_plots_MeOHox_Pt():
 ddG_des = 0.165      # guess
 dG_red = 1.1         # guess
 
-# Formaldehyde vs. HCOOH & CO2 --> digitize data
+# Formaldehyde vs. HCOOH & CO2
 cD_Fmdh = 17.541e-10   # m2/s (10.1021/ie201944h0) fits to average of 10.3390/atmos11101057 
 cH_Fmdh = 1.99e-4      # atm / M (10.1016/j.atmosenv.2010.05.044)
 dG_Fmdh = [0.0]       # guess

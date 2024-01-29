@@ -57,11 +57,12 @@ def load_CO_Cu_data_collection():
     # del dat['Kuhl-pc-Cu']; del dat['Kanan-pc-Cu']
 
 
-    d_sel = {}; d_rgh = {}; d_ph = {}
+    d_sel = {}; d_rgh = {}; d_ph = {}; d_other = {}
     for k in dat:
         if 'CO' in dat[k]:
             # compute CO selectivity:
             sel_CO = compute_CO_selectivity(dat[k])
+            d_other.update({k:{kk:dat[k][kk] for kk in dat[k]}}) 
             U_SHE = dat[k]['V_RHE'][:,0] - (0.059*float(dat[k]['pH']))
             
             d_sel.update({k:np.array([U_SHE, sel_CO]).T})
@@ -69,7 +70,7 @@ def load_CO_Cu_data_collection():
             d_rgh.update({k:dat[k]['roughness']})
             d_ph.update({k:float(dat[k]['pH'])})
 
-    return(d_sel, d_rgh, d_ph)
+    return(d_sel, d_rgh, d_ph, d_other)
         
         
 def compute_CO_selectivity(dat):
@@ -453,7 +454,7 @@ if __name__ == "__main__":
   # selAcCuAg = load_Ac_alloy_data("Sargent_COR_CuAg", -1.6, ulim=300)
   # print(selAcCuAg)
 
-  # selCO, rghCO, pHCO = load_CO_Cu_data_collection()
+  # selCO, rghCO, pHCO, d_all = load_CO_Cu_data_collection()
   # print(selCO)
 
     give_rgh_estimates()
