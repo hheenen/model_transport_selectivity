@@ -55,7 +55,7 @@ def make_plot_CO2RR_CO_pot():
       helper-function to make full plot
 
     """
-    # run model for CO2RR on Cu example
+    # run model for CO in CO2RR on Cu example
     out_plot = {}
     for rgh in [1,30]:
         sdict['rghs'] = [rgh]

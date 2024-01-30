@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 # imports experimental data
+import sys
 sys.path.append("../experimental_reference")
 from read_data import *
 
 
-def save_data(selCO, dall, seltag):
+def save_data(selCO, dall, seltag, rghdat):
     for k in selCO:
         ks = list(dall[k].keys()); 
         ks.remove('I(mA/cm2)'); ks.remove('V_RHE')
@@ -15,8 +16,8 @@ def save_data(selCO, dall, seltag):
         kkdat = np.array(kkdat).T
         ks = ['U_SHE'] + ks + [seltag]
         hdl1 = "data from %s with roughness %.1f, faradaic efficiencies given if not otherwise indicated\n"
-        np.savetxt('../literature_data/dat_CO2RR_CO_%s.txt'%k, kkdat, \
-            header=hdl1%(dall[k]['doi'], rghCO[k]) + "  ".join(ks), fmt='%.6e')
+        np.savetxt('../literature_data/dat_CO2RR_CO_%s.txt'%k.split(" ")[0], kkdat, \
+            header=hdl1%(dall[k]['doi'], rghdat[k]) + "  ".join(ks), fmt='%.6e')
 
 
 if __name__ == "__main__":
@@ -42,7 +43,43 @@ if __name__ == "__main__":
     # print-out data - make function for other examples
     
     seltag = 'sel CO / C1+C2'
-    save_data(selCO, dall, seltag)
+    save_data(selCO, dall, seltag, rghCO)
 
 
     # fig 3b data
+    dat, d_all = load_Acdh_Cu_data()
+    del d_all['CO2R@Cu-Sputtered $\\rho$=None']
+    rghAc = {k:float(d_all[k]['roughness']) for k in d_all}
+
+    # print-out data - make function for other examples
+    seltag = 'sel Acdh / C2'
+    save_data(dat, d_all, seltag, rghAc)
+
+
+    # fig 4 data
+    r_cupd, d_cupd, f_cupd = load_Ac_alloy_data("Ji_COR_CuPd", -1.4)
+    f_cupd = {'-'.join(k.split('-')[1:]).split('+')[0]:f_cupd[k] for k in f_cupd}
+    for k in f_cupd:
+        f_cupd[k]['roughness'] = str(r_cupd[k][3] * 0.4)
+    r_cuag, d_cuag, f_cuag= load_Ac_alloy_data("Sargent_COR_CuAg", -1.6, ulim=300)
+    f_cuag= {'-'.join(k.split('-')[1:]).split('+')[0]:f_cuag[k] for k in f_cuag}
+    for k in f_cuag:
+        f_cuag[k]['roughness'] = str(r_cuag[k][3] * 5.0)
+    # merge data
+    dsel = d_cupd
+    dsel.update(d_cuag)
+    fdat = f_cupd
+    fdat.update(f_cuag)
+    rghdat = {}
+    for k in r_cupd:
+        rghdat.update({k:r_cupd[k][3]*0.4})
+    for k in r_cuag:
+        rghdat.update({k:r_cuag[k][3]*5.0})
+
+    print({k:r_cupd[k][0] for k in r_cupd})
+    print(rghdat)
+
+    # print-out data - make function for other examples
+    seltag = 'sel Ac / C2'
+    save_data(dsel, fdat, seltag, rghdat)
+

@@ -170,7 +170,7 @@ def load_Ac_alloy_data(key, curr_lim, ulim=None):
     # roughness values
     drgh = {k:[float(dat[k]['roughness']), rrgh[k], jc[k], icrgh[k]] for k in rrgh}
     drgh = {'-'.join(k.split('-')[1:]).split('+')[0]:drgh[k] for k in drgh}
-    return(drgh, dout)
+    return(drgh, dout, dat)
 
 
 def _fit_average_exp_rgh(dj):
@@ -263,7 +263,7 @@ def load_Acdh_Cu_data():
     sdat = compute_C2_selectivity(dat, Sads=Ack)
     dout = {k:np.array([sdat[k]['U_SHE'][:,0], sdat[k]['SC2_%s'%Ack][:,0]]).T for k in sdat}
     dout = {k:_remove_zerox(dout[k]) for k in dout}
-    return(dout)
+    return(dout, dat)
 
 def _remove_zerox(dat):
     indz = np.where(dat[:,0] != 0.0)[0]
@@ -439,7 +439,7 @@ if __name__ == "__main__":
   # print(selCO)
   # print("rgh from current is be:",[1., 1.248, 2.70, 3.97])
 
-  # selAcdH = load_Acdh_Cu_data()
+  # selAcdH, d_all = load_Acdh_Cu_data()
   # print(selAcdH)
 
   # selORR = load_ORR_Pt_data() 

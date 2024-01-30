@@ -1,0 +1,5 @@
+# data from 10.1021/acsenergylett.8b00092 with roughness 1.0, faradaic efficiencies given if not otherwise indicated
+# U_SHE  I(mA/cm2)  n-propanol  Propionaldehyde  Ethanol  Acetaldehyde  Acetate  Ethylene  Hydrogen  sel Acdh / C2
+-1.167000e+00 2.200000e-01 0.000000e+00 1.650000e-01 8.300000e-02 4.500000e-02 0.000000e+00 1.110000e-01 5.590000e-01 1.554404e-01
+-1.267000e+00 8.200000e-01 0.000000e+00 1.850000e-01 2.700000e-02 2.900000e-02 1.500000e-02 1.980000e-01 5.620000e-01 8.754717e-02
+-1.357000e+00 2.120000e+00 4.900000e-02 6.100000e-02 1.120000e-01 3.100000e-02 1.200000e-02 2.970000e-01 4.320000e-01 7.436728e-02
