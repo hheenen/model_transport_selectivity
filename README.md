@@ -18,6 +18,8 @@ https://doi.org/10.5281/zenodo.5013854
 - ``tests`` contains a regression test for the ``model_Sel_CORAc``
 - ``publication_plots`` contains scripts to run simulations and plot figures
 for the manuscript 10.26434/chemrxiv-2023-cxbgr
+- ``literature_data`` contains experimental data in txt files used to 
+cmopare the model in the manuscript 10.26434/chemrxiv-2023-cxbgr
 
 ### To get started 
 

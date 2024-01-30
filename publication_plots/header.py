@@ -16,11 +16,6 @@ from model_Sel_DRAR.sim_diffusion_selectivity import sample_data
 from model_Sel_DRAR.model_plots import plot_xy, plot_xy_ax, set_plotting_env, \
                                         writefig, golden_ratio, clrs
 
-# imports experimental data
-sys.path.append("../experimental_reference")
-from read_data import *
-
-
 def get_adsdes_engs(cd):
     """
       helper-function to convert barriers to thermodynamics as barriers 
