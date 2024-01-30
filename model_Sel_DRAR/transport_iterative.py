@@ -115,19 +115,7 @@ def _search_min_diff(mkin, y0, U, pH, Dx, Lx, crange, pA, i_diss, i_rads, conv_e
         cratio.append(c0/x)
     imin = np.absolute(np.array(cratio) -1.0).argmin() # this is tested (same as cdiff)
     increase_max = np.all(np.array(cratio) > 1.0)
-    # NOTE these don't occur anymore since usage of fmin --> delete?!
-    # check when final plots are done
-    if imin == 0: 
-        logging.debug("TRNSrange: input range out of range low-end")
-        print("TRNSrange: input range out of range low-end")
-        ndiff = [crange[0]-0.5*crange[0],crange[1]]
-    elif imin == crange.size-1 or increase_max:
-        logging.debug("TRNSrange: input range out of range high-end")
-        print("TRNSrange: input range out of range high-end")
-        ndiff = [crange[-1], crange[-1]+0.5*crange[0]]
-    # encompassing crange (around minimum)
-    else: # standard solution
-        ndiff = crange[imin-1:imin+2][[0,2]]
+    ndiff = crange[imin-1:imin+2][[0,2]]
     return(ndiff, increase_max)
 
 
