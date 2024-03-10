@@ -58,8 +58,15 @@ def plot_xy_ax_in(ax1, dat, ylabel, xlabel, ls_args, derr={},\
         xy = dat[k]
         err = derr[k]
         if err.sum() > 0:
-            ax1.errorbar(xy[:,0], xy[:,1], xerr=err[:,0], yerr=err[:,1], \
-                **ls_args[k], label=k, elinewidth = 0.8, capsize=2.0)
+            zz = 1
+            if 'zorder' in ls_args[k]:
+                zz = ls_args[k].pop('zorder')
+            if len(extra_leg) == 0:
+                ax1.errorbar(xy[:,0], xy[:,1], xerr=err[:,0], yerr=err[:,1], \
+                    **ls_args[k], elinewidth = 0.5, capsize=1.0, zorder=zz, label=k)
+            else:
+                ax1.errorbar(xy[:,0], xy[:,1], xerr=err[:,0], yerr=err[:,1], \
+                    **ls_args[k], elinewidth = 0.5, capsize=1.0, zorder=zz)
         elif len(extra_leg) == 0:
             ax1.plot(xy[:,0], xy[:,1], **ls_args[k], label=k)
 

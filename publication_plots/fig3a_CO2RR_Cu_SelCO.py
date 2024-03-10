@@ -9,19 +9,26 @@ def load_literature_CO2RR_COsel_data():
 
     """
     fkeys= ["Huang-111", "Huang-OD-Cu", "Kanan-pc-Cu", "Kuhl-pc-Cu"]
-    selCO = {fkey:np.loadtxt("../literature_data/dat_CO2RR_CO_%s.txt"%fkey)[:,[0,-1]]
+    selCO = {fkey:np.loadtxt("../literature_data/dat_CO2RR_CO_%s.txt"%fkey)[:,[0,-2]]
+        for fkey in fkeys}
+    errCO = {fkey:np.loadtxt("../literature_data/dat_CO2RR_CO_%s.txt"%fkey)[:,[0,-1]]
         for fkey in fkeys}
     for k in selCO:
         selCO[k][:,1] *= 100.
+        errCO[k][:,1] *= 100.
+        errCO[k][:,0] = 0. # x-error not taken
+        # unreasonable errors from error-propagation > 50% are ignored:
+        ind50 = np.where(np.absolute(errCO[k][:,1]/selCO[k][:,1]) > 0.5)[0]
+        errCO[k][ind50,1] = 0.
     
     # rgh vals as described in SI -- decimals are to identify coloring
     rghvals = {'Huang-OD-Cu':32, 'Kuhl-pc-Cu':1.1,
         'Huang-111':1.2, 'Kanan-pc-Cu':30.1}
 
-    return selCO, rghvals
+    return selCO, errCO, rghvals
 
 
-def plot_CO2RR_CO_pot(filename, dat, ls_args, extraleg):
+def plot_CO2RR_CO_pot(filename, dat, ls_args, extraleg, derr={}):
     """
       helper-function to plot ORR data
 
@@ -32,7 +39,7 @@ def plot_CO2RR_CO_pot(filename, dat, ls_args, extraleg):
     xlabel = r'$U\rm _{SHE}~(V)$'; ylabel = r'selectivity CO / C$_{1} \! + \! \mathrm{C}_{2\!+} \! (\%)$'
     
     ax = plot_xy_ax(dat, ylabel, xlabel, ls_args, tag="", line=[], lsize=7, \
-        legpos=4, title='', extra_leg=extraleg)
+        legpos=4, title='', extra_leg=extraleg, derr=derr)
 
     ax.annotate('(a)', xy=(0.08, 0.95), xycoords='figure fraction')
     clr1 = ls_args['sim_1']['color']
@@ -50,7 +57,7 @@ def plot_CO2RR_CO_pot(filename, dat, ls_args, extraleg):
     writefig(filename ,folder='output', write_pdf=False, write_png=True, write_eps=False)
 
 
-def make_plot_CO2RR_CO_pot():
+def make_plot_CO2RR_CO_pot(no_errorbars=True):
     """
       helper-function to make full plot
 
@@ -67,7 +74,9 @@ def make_plot_CO2RR_CO_pot():
         out_plot['sim_%i'%rgh] = out_plot['sim_%i'%rgh][ind,:]
     
     # load literature data
-    selCO, rghCO = load_literature_CO2RR_COsel_data()
+    selCO, errCO, rghCO = load_literature_CO2RR_COsel_data()
+    if no_errorbars: # only plot on choice for visibility
+        errCO = {}
     
     # prepare ls_args 
     clsk = {1:clrs['darkblue'], 1.1:clrs['azurblue'], 1.2:clrs['lightblue2'], 
@@ -90,7 +99,7 @@ def make_plot_CO2RR_CO_pot():
     # make plot
     filename = "Fig3a_CO2RR_Cu_SelCO_pot"
     selCO.update(out_plot)
-    plot_CO2RR_CO_pot(filename, selCO, ls_args, extraleg)
+    plot_CO2RR_CO_pot(filename, selCO, ls_args, extraleg, derr=errCO)
 
 
 #################################
@@ -115,6 +124,6 @@ sdict = {"Us":np.arange(-1.6,-0.6,0.05), "rghs":None, "mdls":[1]}
 
 
 if __name__ == "__main__":
-    make_plot_CO2RR_CO_pot()
+    make_plot_CO2RR_CO_pot(no_errorbars=True)
 
 

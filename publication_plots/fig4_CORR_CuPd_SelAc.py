@@ -18,12 +18,20 @@ def load_literature_CO2RR_COsel_data():
              "CuAg_1%", "CuAg_0.5%", "CuAg_0.25%", \
              "Cu-NP", "CuAg_0%"]
     selAc = {kf(fkey):np.loadtxt(\
+        "../literature_data/dat_CO2RR_CO_%s.txt"%fkey)[:,[0,-2]] \
+        for fkey in fkeys}
+    errAc = {kf(fkey):np.loadtxt(\
         "../literature_data/dat_CO2RR_CO_%s.txt"%fkey)[:,[0,-1]] \
         for fkey in fkeys}
     for k in selAc:
         selAc[k][:,1] *= 100.
+        errAc[k][:,1] *= 100.
+        errAc[k][:,0] = 0. # x-error not taken
+        # unreasonable errors from error-propagation > 50% are ignored:
+        ind50 = np.where(np.absolute(errAc[k][:,1]/selAc[k][:,1]) > 0.5)[0]
+        errAc[k][ind50,1] = 0.
    
-    return selAc
+    return selAc, errAc
 
 
 def kf(k):
@@ -57,7 +65,12 @@ def cluster_pot(dat, v):
 
     """
     sel_v = {k: dat[k][np.absolute(dat[k][:,0] - v).argmin(),1] for k in dat}
-    return sel_v
+    ind_v = {k: np.absolute(dat[k][:,0] - v).argmin() for k in dat}
+    # determine standard deviation from target potential "v"
+    dif_v = {k: np.absolute(dat[k][:,0] - v).min() for k in dat}
+    std_v = np.sqrt(sum([dif_v[k]**2.0 for k in dif_v]) / len(dif_v))
+    print("deviation potential dependent data-points: +/- %.3f V"%std_v)
+    return sel_v, ind_v
 
 
 def run_acetate_model_potential():
@@ -86,7 +99,7 @@ def run_acetate_model_potential():
     return sim_dat
 
 
-def plot_CO2RR_Acdh_pot(filename, dat, sim_dat, ls_args):
+def plot_CO2RR_Acdh_pot(filename, dat, sim_dat, ls_args, derr={}):
     """
       helper-function to plot acetate in CORR on Cu/Pd data
 
@@ -100,7 +113,7 @@ def plot_CO2RR_Acdh_pot(filename, dat, sim_dat, ls_args):
 
     # plot data-points
     ax = plot_xy_ax(deepcopy(dat), ylabel, xlabel, ls_args, tag="", line=[], lsize=6, \
-        legpos=1, title=r'')
+        legpos=1, title=r'', derr=derr)
 
     # plot sim-dat as ranges
     ax.fill_between(x=Us, y1=sim_dat[r'$\rho = 10$'][:,1], y2=sim_dat[r'$\rho = 50$'][:,1], \
@@ -119,7 +132,7 @@ def plot_CO2RR_Acdh_pot(filename, dat, sim_dat, ls_args):
     writefig(filename ,folder='output', write_pdf=False, write_png=True)
 
 
-def make_plot_CO2RR_Ac_pot():
+def make_plot_CO2RR_Ac_pot(no_errorbars=True):
     """
       helper-function to make full plot S4a
 
@@ -128,16 +141,18 @@ def make_plot_CO2RR_Ac_pot():
     sim_dat = run_acetate_model_potential()
 
     # load experimental reference data
-    dat = load_literature_CO2RR_COsel_data()
+    dat, err = load_literature_CO2RR_COsel_data()
+    if no_errorbars: # only plot on choice for visibility
+        err = {}
 
     # prepare ls_args
     ls_args = make_lsargs()
 
     filename = "FigS4a_CORR_CuPd_SelAc_pot"
-    plot_CO2RR_Acdh_pot(filename, dat, sim_dat, ls_args)
+    plot_CO2RR_Acdh_pot(filename, dat, sim_dat, ls_args, derr=err)
 
 
-def plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, plot_SI):
+def plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, derr, plot_SI):
     """
       helper-function to plot acetate in CORR on Cu/Pd data
 
@@ -161,7 +176,7 @@ def plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, plot_SI):
     
     # actual plotting
     ax = plot_xy_ax(dat_i, ylabel, xlabel, ls_args, tag='', line=[], lsize=6, \
-        legpos=1, legcol=3, csp=0.8, extra_leg=extraleg)
+        legpos=1, legcol=3, csp=0.8, extra_leg=extraleg, derr=derr)
     
     if plot_SI:
         for k in dat_c:
@@ -214,13 +229,16 @@ def make_lsargs():
     return ls_args
 
 
-def make_plot_CO2RR_Ac_rgh():
+def make_plot_CO2RR_Ac_rgh(no_errorbars=True):
     """
       helper-function to make full plot 4 and S4b
 
     """
     # load experimental reference data
-    dat = load_literature_CO2RR_COsel_data()
+    dat, err = load_literature_CO2RR_COsel_data()
+    if no_errorbars: # only plot on choice for visibility
+        err = {}
+    
     rgh_i = {'Cu-NP': 157.22, 'CuPd': 43.82, 'd-CuPd': 27.31, 'Cu3.4Pd': 75.35, 
         'Cu0.3Pd': 1.20, 'CuAg_0%': 188.20, 'CuAg_0.25%': 19.12, 
         'CuAg_0.5%': 60.97, 'CuAg_1%': 5.0}
@@ -229,8 +247,9 @@ def make_plot_CO2RR_Ac_rgh():
     rgh_i = {kf(k):rgh_i[k] for k in rgh_i}
     rgh_c = {kf(k):rgh_c[k] for k in rgh_c}
 
-    v = -1.7 # potential at whcih to plot
-    y_pot = cluster_pot(dat, v)
+    v = -1.7 # potential at which to plot
+    y_pot, ind = cluster_pot(dat, v)
+    y_err = {k:np.array([[0.0, err[k][ind[k],1]]]) for k in err}
     
     dat_c = {k:np.array([[rgh_c[k], y_pot[k]]]) for k in rgh_c}
     dat_i = {k:np.array([[rgh_i[k], y_pot[k]]]) for k in rgh_i}
@@ -253,18 +272,18 @@ def make_plot_CO2RR_Ac_rgh():
     
     # plot Fig 4
     filename = "Fig4_CORR_CuPd_SelAc_rgh_%.1f"%v
-    plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, plot_SI=False)
+    plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, derr=y_err, plot_SI=False)
 
     
     # plot Fig 4
     filename = "FigS4b_CORR_CuPd_SelAc_rgh_%.1f"%v
-    plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, plot_SI=True)
+    plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, derr=y_err, plot_SI=True)
 
 
 
 if __name__ == "__main__":
     
-    make_plot_CO2RR_Ac_rgh()
+    make_plot_CO2RR_Ac_rgh(no_errorbars=True)
 
-    make_plot_CO2RR_Ac_pot()
+    make_plot_CO2RR_Ac_pot(no_errorbars=True)
     

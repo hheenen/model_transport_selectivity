@@ -31,15 +31,23 @@ def load_literature_CO2RR_COsel_data():
     }
     fkeys= ["Cu-Flower" , "OD-Cu", "pc-Cu"]
     selAcdh = {tag_dict[fkey]:np.loadtxt(\
+        "../literature_data/dat_CO2RR_CO_COR@%s.txt"%fkey)[:,[0,-2]] \
+        for fkey in fkeys}
+    errAcdh = {tag_dict[fkey]:np.loadtxt(\
         "../literature_data/dat_CO2RR_CO_COR@%s.txt"%fkey)[:,[0,-1]] \
         for fkey in fkeys}
     for k in selAcdh:
         selAcdh[k][:,1] *= 100.
+        errAcdh[k][:,1] *= 100.
+        errAcdh[k][:,0] = 0. # x-error not taken
+        # unreasonable errors from error-propagation > 50% are ignored:
+        ind50 = np.where(np.absolute(errAcdh[k][:,1]/selAcdh[k][:,1]) > 0.5)[0]
+        errAcdh[k][ind50,1] = 0.
    
-    return selAcdh
+    return selAcdh, errAcdh
 
 
-def plot_CO2RR_Acdh_pot(filename, dat, ls_args):
+def plot_CO2RR_Acdh_pot(filename, dat, ls_args, derr={}):
     """
       helper-function to plot Acdh in CORR on Cu data
 
@@ -54,7 +62,7 @@ def plot_CO2RR_Acdh_pot(filename, dat, ls_args):
     extraleg.update({'model':dict(ls='-', color='k')})
     
     ax = plot_xy_ax(dat, ylabel, xlabel, ls_args, tag="", line=[], lsize=7, \
-        legpos=2, title='', extra_leg=extraleg)
+        legpos=2, title='', extra_leg=extraleg, derr=derr)
 
     # annotations
     ax.annotate(r'$\rho$=1', xytext=(-1.31, 22), xy=(-1.26,20), color=clrs['darkblue'], size=8, 
@@ -73,7 +81,7 @@ def plot_CO2RR_Acdh_pot(filename, dat, ls_args):
         write_png=True, write_eps=False) 
 
 
-def make_plot_CO2RR_Acdh_pot():
+def make_plot_CO2RR_Acdh_pot(no_errorbars=True):
     """
       helper-function to make full plot
 
@@ -92,7 +100,9 @@ def make_plot_CO2RR_Acdh_pot():
 
     
     # load literature data
-    dat = load_literature_CO2RR_COsel_data()
+    dat, err = load_literature_CO2RR_COsel_data()
+    if no_errorbars: # only plot on choice for visibility
+        err = {}
 
     # add simulation data
     dat.update({r'model $\rho=1$':out_plot['Acdh_1']})
@@ -107,7 +117,7 @@ def make_plot_CO2RR_Acdh_pot():
 
     # make plot
     filename = "Fig3b_CORR_Cu_SelAcdh_pot"
-    plot_CO2RR_Acdh_pot(filename, dat, ls_args)
+    plot_CO2RR_Acdh_pot(filename, dat, ls_args, derr=err)
 
 
 #################################
@@ -132,6 +142,6 @@ sdict = {"Us":np.arange(-1.35,-1.0,0.05), "rghs":None, "mdls":[1]}
          
 
 if __name__ == "__main__":
-    make_plot_CO2RR_Acdh_pot()
+    make_plot_CO2RR_Acdh_pot(no_errorbars=True)
 
 
