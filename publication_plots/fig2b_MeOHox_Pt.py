@@ -77,8 +77,8 @@ def make_plots_MeOHox_Pt():
         r'model':out_plot['Fmdh']}
     plot_MeOHox_Pt(filename, dat, ls_args, sketch=True)
     
-    # plot FigS3b
-    filename = "FigS3b_MeOHox_Pt_SelFmdh"
+    # plot FigS4b
+    filename = "FigS4b_MeOHox_Pt_SelFmdh"
     dat = {r'neg scan': selH2COn,
         r'pos scan': selH2COp,
         r'model':out_plot['Fmdh']}

@@ -88,8 +88,8 @@ def make_plots_ORR_Pt():
     dat = {r'pc-Pt':selORR[r'0.58 V vs. RHE'], r'model':out_plot['H2O2_Pt']}
     plot_ORR_Pt(filename, dat, ls_args, sketch=True)
 
-    # plot FigS3a
-    filename = "FigS3a_ORR_Pt_SelH2O2"
+    # plot FigS4a
+    filename = "FigS4a_ORR_Pt_SelH2O2"
     dat = selORR; dat.update({r'model':out_plot['H2O2_Pt']})
     plot_ORR_Pt(filename, dat, ls_args, sketch=False)
 

@@ -75,7 +75,7 @@ def cluster_pot(dat, v):
 
 def run_acetate_model_potential():
     """
-      helper-function to run acetate model for Fig S4a
+      helper-function to run acetate model for Fig S5a
 
     """
     mkin = make_facet_mkin_model_gpaw(100)
@@ -134,7 +134,7 @@ def plot_CO2RR_Acdh_pot(filename, dat, sim_dat, ls_args, derr={}):
 
 def make_plot_CO2RR_Ac_pot(no_errorbars=True):
     """
-      helper-function to make full plot S4a
+      helper-function to make full plot S5a
 
     """
     # run model for Ac in CORR on Cu/Pd example - potential range
@@ -148,7 +148,7 @@ def make_plot_CO2RR_Ac_pot(no_errorbars=True):
     # prepare ls_args
     ls_args = make_lsargs()
 
-    filename = "FigS4a_CORR_CuPd_SelAc_pot"
+    filename = "FigS5a_CORR_CuPd_SelAc_pot"
     plot_CO2RR_Acdh_pot(filename, dat, sim_dat, ls_args, derr=err)
 
 
@@ -210,7 +210,7 @@ def plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, derr, plot_SI)
 
 def make_lsargs():
     """
-      helper-function to make full plot S4a
+      helper-function to make full plot S5a
 
     """
     okeys = ['CuPd', 'd-CuPd', 'Cu3.4Pd', 'Cu0.3Pd', 'Cu-NP'] 
@@ -231,7 +231,7 @@ def make_lsargs():
 
 def make_plot_CO2RR_Ac_rgh(no_errorbars=True):
     """
-      helper-function to make full plot 4 and S4b
+      helper-function to make full plot 4 and S5b
 
     """
     # load experimental reference data
@@ -276,7 +276,7 @@ def make_plot_CO2RR_Ac_rgh(no_errorbars=True):
 
     
     # plot Fig 4
-    filename = "FigS4b_CORR_CuPd_SelAc_rgh_%.1f"%v
+    filename = "FigS5b_CORR_CuPd_SelAc_rgh_%.1f"%v
     plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, derr=y_err, plot_SI=True)
 
 
