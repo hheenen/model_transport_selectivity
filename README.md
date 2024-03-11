@@ -34,7 +34,7 @@ No installation script is provided, you can run the model through the plotting
 scripts:
 ```bash
 cd publication_plots
-python make_all_plots.py
+python make_all_plots.py # optionally add error-bars for experimental data
 ```
 
 ### Dependencies
