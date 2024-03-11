@@ -4,7 +4,7 @@
 
 """
 
-from model_COR_Ac.data.eval_thermodynamics import _apply_rune_corrections, \
+from model_Sel_CORAc.data.eval_thermodynamics import _apply_rune_corrections, \
     _evaluate_all_vib_contributions, _relate_kW_CHE, get_rxn_state
 
 
@@ -101,7 +101,7 @@ def prep_surf_energies():
         array with energetics for reactions on 111, 100, 110, 211
 
     """
-    from model_COR_Ac.data.rct_data import rxn, pressures, e_dat, mechs
+    from model_Sel_CORAc.data.rct_data import rxn, pressures, e_dat, mechs
     
     pH = 0; voltage = 0.0 # 0.5 RHE
 

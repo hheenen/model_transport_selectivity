@@ -6,9 +6,9 @@
 """
 
 import numpy as np
-from model_COR_Ac.mkm.ODE_mkm_solver import ODE_mkm_solver
-from model_COR_Ac.tools import load_pickle_file, write_pickle_file
-from model_COR_Ac.data.energies_mkm import prep_surf_energies
+from model_Sel_CORAc.mkm.ODE_mkm_solver import ODE_mkm_solver
+from model_Sel_CORAc.tools import load_pickle_file, write_pickle_file
+from model_Sel_CORAc.data.energies_mkm import prep_surf_energies
 
 
 #########################################################################

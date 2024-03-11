@@ -10,8 +10,8 @@
 
 import logging
 from scipy.optimize import fmin
-from model_COR_Ac.transport.flux_conversion import convert_TOF2flux
-from model_COR_Ac.data.constants import *
+from model_Sel_CORAc.transport.flux_conversion import convert_TOF2flux
+from model_Sel_CORAc.data.constants import *
 
 
 def solve_MS_CO_analytical(mkin, U_SHE, pH, Lx, roughness):
@@ -25,7 +25,7 @@ def solve_MS_CO_analytical(mkin, U_SHE, pH, Lx, roughness):
       Parameters
       ----------
       mkin : mkm-object
-        pre-created mkm object (see model_COR_Ac.mkm.model_surfrct)
+        pre-created mkm object (see model_Sel_CORAc.mkm.model_surfrct)
       U_SHE : float
         value of applied potential vs. SHE
       pH : float

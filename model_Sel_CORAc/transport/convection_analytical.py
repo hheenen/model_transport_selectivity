@@ -6,8 +6,8 @@
 """
 
 import numpy as np
-from model_COR_Ac.transport.flux_conversion import convert_TOF2flux
-from model_COR_Ac.data.constants import *
+from model_Sel_CORAc.transport.flux_conversion import convert_TOF2flux
+from model_Sel_CORAc.data.constants import *
 
 
 def estimate_convective_pH_analytical(flx, pH_bulk, roughness, SR='plate'):

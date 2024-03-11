@@ -11,11 +11,11 @@
 import numpy as np
 import os, logging
 from scipy.optimize import fmin
-from model_COR_Ac.transport.flux_conversion import fB, convert_TOF2flux
-from model_COR_Ac.transport.diffrct_numerical_1D2cmp import diffrct1d2cmp
-from model_COR_Ac.tools import load_pickle_file, write_pickle_file, _make_hash
-from model_COR_Ac.mkm.mkm_energetics import adjust_SHE_engs, make_rates
-from model_COR_Ac.data.constants import *
+from model_Sel_CORAc.transport.flux_conversion import fB, convert_TOF2flux
+from model_Sel_CORAc.transport.diffrct_numerical_1D2cmp import diffrct1d2cmp
+from model_Sel_CORAc.tools import load_pickle_file, write_pickle_file, _make_hash
+from model_Sel_CORAc.mkm.mkm_energetics import adjust_SHE_engs, make_rates
+from model_Sel_CORAc.data.constants import *
 
 
 #########################################################################
@@ -31,7 +31,7 @@ def solve_MS_ketene_numerical(mkin, U_SHE, pH, Lx, diffmode, pCO, i_diss,
       Parameters
       ----------
       mkin : mkm-object
-        pre-created mkm object (see model_COR_Ac.mkm.model_surfrct)
+        pre-created mkm object (see model_Sel_CORAc.mkm.model_surfrct)
       U_SHE : float
         value of applied potential vs. SHE
       pH : float
@@ -213,7 +213,7 @@ def solve_MS_ketene_analytical(mkin, U_SHE, pH, Lx, diffmode, pCO=1.0, i_diss=1,
       Parameters
       ----------
       mkin : mkm-object
-        pre-created mkm object (see model_COR_Ac.mkm.model_surfrct)
+        pre-created mkm object (see model_Sel_CORAc.mkm.model_surfrct)
       U_SHE : float
         value of applied potential vs. SHE
       pH : float

@@ -7,7 +7,7 @@ import sys, os, logging
 import numpy as np
 from scipy.integrate import odeint
 
-from model_COR_Ac.mkm.mkm_energetics import adjust_SHE_engs, make_rates
+from model_Sel_CORAc.mkm.mkm_energetics import adjust_SHE_engs, make_rates
 
 
 class ODE_mkm_solver(object):

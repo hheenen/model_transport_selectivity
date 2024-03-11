@@ -6,7 +6,7 @@
 """
 
 import numpy as np
-from model_COR_Ac.data.constants import *
+from model_Sel_CORAc.data.constants import *
 
 
 def fB(dE, T=300):

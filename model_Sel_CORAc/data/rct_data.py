@@ -96,8 +96,8 @@ def read_catmap_input(infile):
 ####  file can be replaced by other energetics      ####
 ########################################################
 
-import model_COR_Ac
-p = model_COR_Ac.__path__[0]
+import model_Sel_CORAc
+p = model_Sel_CORAc.__path__[0]
 engfile = '%s/data/mkm_files/catin_allfacets_4.400_GPAW_SJM_wbarriers.txt'%p
 e_dat = read_catmap_input(engfile)
 

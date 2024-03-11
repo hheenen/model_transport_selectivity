@@ -1,6 +1,6 @@
 """
 This module contains all functions to handle the transport and integrate it
-with the kinetic model from model_COR_Ac.mkm in a multi-scale ansatz
+with the kinetic model from model_Sel_CORAc.mkm in a multi-scale ansatz
 
 most functionality is summarized in the wrapper function `solve_MS_model`
 
@@ -8,10 +8,10 @@ most functionality is summarized in the wrapper function `solve_MS_model`
 
 import numpy as np
 
-from model_COR_Ac.transport.ms_CO_transport import solve_MS_CO_analytical
-from model_COR_Ac.transport.ms_Ac_transport import solve_MS_ketene_analytical, \
+from model_Sel_CORAc.transport.ms_CO_transport import solve_MS_CO_analytical
+from model_Sel_CORAc.transport.ms_Ac_transport import solve_MS_ketene_analytical, \
                                                    solve_MS_ketene_numerical
-from model_COR_Ac.transport.convection_analytical import estimate_convective_pH_analytical
+from model_Sel_CORAc.transport.convection_analytical import estimate_convective_pH_analytical
 
 
 def solve_MS_model(mkin, U_SHE, pH, Lx, diffmode, i_diss=1, i_rads=-1, roughness=1.0, tol_diff=None):
@@ -23,7 +23,7 @@ def solve_MS_model(mkin, U_SHE, pH, Lx, diffmode, i_diss=1, i_rads=-1, roughness
       Parameters
       ----------
       mkin : mkm-object
-        pre-created mkm object (see model_COR_Ac.mkm.model_surfrct)
+        pre-created mkm object (see model_Sel_CORAc.mkm.model_surfrct)
       U_SHE : float
         value of applied potential vs. SHE
       pH : float
