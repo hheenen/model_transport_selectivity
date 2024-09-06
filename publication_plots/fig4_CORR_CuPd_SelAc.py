@@ -10,10 +10,6 @@ def load_literature_CO2RR_COsel_data():
       helper-function to load Pt-ORR data
 
     """
-    tag_dict = {'Cu-Flower':r"Cu-flower $\rho$=390",
-        'pc-Cu':r"pc-Cu $\rho$=1",
-        'OD-Cu':r"OD-Cu $\rho$=87",
-    }
     fkeys = ["d-CuPd", "CuPd", "Cu0.3Pd", "Cu3.4Pd", \
              "CuAg_1%", "CuAg_0.5%", "CuAg_0.25%", \
              "Cu-NP", "CuAg_0%"]
