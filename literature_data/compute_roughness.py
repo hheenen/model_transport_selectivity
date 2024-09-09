@@ -13,11 +13,6 @@ to exclude sensitivity of current to reaction design, pH, etc.
 
 import os, sys
 import numpy as np
-# clean this part up still
-sys.path.append("/Users/heenen/Nextcloud/DTU_related/Publications/Acetate_Selectivity/co_acetate/experimental_data/COR_data_paper")
-from plot_paper_data import _load_pickle_file
-sys.path.append("/Users/heenen/Nextcloud/DTU_related/Publications/Acetate_Selectivity/co_acetate/experimental_data")
-from get_c2_selectivities import compute_C2_selectivity
 from scipy.optimize import curve_fit
 import yaml
 
@@ -288,15 +283,6 @@ def rgh_estimates(dj, fname="", m=1, verbose=True, save_files=True):
     plot_exp_fit(fname, dj, [popt_full]+[popt_refit[k] for k in popt_refit], \
         verbose=verbose, save_file=save_files)
 
-    
-    # NOTE: this part is temporary for full-fit roughness comparison
-    #  1) tot fit depends on RHE/SHE --> very unstable
-    #  2) HER-corrected ?
-    klist = list(popt_full.keys())
-    ca = np.array([popt_full[k][0] for k in klist])
-    rrgh_full = ca/ca.min() 
-    print('||'.join(["%s = %.2f"%(klist[i],rrgh_full[i]) for i in range(len(klist))]))
-
     # obtain relative roughness averages and stds
     rrgh, rrgh_std = average_roughness_from_fits(popt_refit)
 
@@ -307,54 +293,8 @@ def rgh_estimates(dj, fname="", m=1, verbose=True, save_files=True):
 
 
 if __name__ == "__main__":
-    # TODO:
-    # (x) strip code of everything - rewrite, I think now it's good & makes sense!
-    # (x) refactor roughness fitting w. comment
-    # (x) add fit plots
-    # (x) check full fit comparison
-    # (x) nice output with error
-    #   (x) output into table --> add factor
-    #   (x) add fit parameters into plot legend
-    #   (x) plot fits into same plot
-    # (x) check tot - NOTE tot fit depends on RHE/SHE --> very unstable
-    # (x) check Jahed's code --> same code, small differences in values mostly due to different normalization (after averaging); logic and argumentatitve
-    # (x) add to reading CVS --> move data-reading function out of the function
-    # (x) integrate this function into repo
-    # (x) add Huang estimates! Transport lmitations?--> need to include CVS data in repo; what about transport
-    # (x) add HER option - add as function to run on loaded data
-    # (x) check tot with HER
-    # (x) careful HER exclusion may require omittance of high overpotential region; look at fits 
-    # (x) replot Fig. 4 --> better read-out
-    # (x) replot Fig. 3b
-    # (x) add new data into dat-files --> change noted roughnesses only list capacitances
-    # ( ) also add selectivity calculation
 
-    # ( ) auto-detect 'm' ? --> no time
-
-    # ( ) prepare correction!
-
-
-### # TODO: delete when not needed anymore
-### def get_USHE(data):
-###     urhe = data['V_RHE']
-###     ushe[:,0] -= 0.059 * float(data['pH'])
-###     return ushe
-
-### dpath = "../../../../DTU_related/Publications/Acetate_Selectivity/co_acetate/experimental_data/COR_data_paper"
-### dat = _load_pickle_file(dpath+"/Huang_CO2R/Huang_CO2R.pkl")
-### print(dat['100'].keys())
-### # U_SHE  I(mA/cm2)  Methane  Ethylene  CO  Hydrogen  Formate  Ethanol  Acetate  sel CO / C1+C2  sig-sel
-### keys = ['V_RHE','I(mA/cm2)', 'Hydrogen', 'Methane', 'Ethylene', 'CO', 'Formate', 'Ethanol', 'Acetate']
-### for key in ['100', '110']:
-###     vshe = dat[key]['V_RHE'][:,0] - 0.059 * float(dat[key]['pH'])
-###     out =  np.zeros((vshe.size, len(keys)+2))
-###     out[:,0] = vshe
-###     for i in range(1,len(keys)):
-###         out[:,i] = dat[key][keys[i]][:,0]
-###     np.savetxt("Huang_%s.txt"%key, out, fmt='%.6e')
-
-
-    ### remove HER option ###
+    ### remove HER from total current option ###
     # we left this option in, as it makes in principle sense for 
     # alloy data (Pd/Ag perfrom HER) - but it cannot be consistently applied to 
     # all data-sets (no HER data or SC which suffer from transport effects)
