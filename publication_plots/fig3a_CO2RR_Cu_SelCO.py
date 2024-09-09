@@ -41,12 +41,15 @@ def plot_CO2RR_CO_pot(filename, dat, ls_args, extraleg, derr={}):
     ax = plot_xy_ax(dat, ylabel, xlabel, ls_args, tag="", line=[], lsize=7, \
         legpos=4, title='', extra_leg=extraleg, derr=derr)
 
+    # new-fill-between
+    ax.fill_between(x=dat['sim_30'][:,0], y1=dat['sim_15'][:,1], y2=dat['sim_30'][:,1], color='r', alpha=0.2)
+
     ax.annotate('(a)', xy=(0.08, 0.95), xycoords='figure fraction')
     clr1 = ls_args['sim_1']['color']
     clr30 = ls_args['sim_30']['color']
     ax.annotate(r'$\rho$=1', xytext=(-1.62, 25), xy=(-1.45,25), color=clr1, size=8, 
             arrowprops=dict(arrowstyle="-", connectionstyle="arc3", color=clr1))
-    ax.annotate(r'$\rho$=30', xytext=(-1.25, 5), xy=(-1.35,10), color=clr30, size=8, 
+    ax.annotate(r'$\rho$=15-30', xytext=(-1.28, 5), xy=(-1.35,10), color=clr30, size=8, 
             arrowprops=dict(arrowstyle="-", connectionstyle="arc3", color=clr30))
     
     add_sketch2(ax, r'CO$_2$', r'C$_{1} \! + \! \mathrm{C}_{2\!+}$', r'  CO') #dxy=(0.22,-0.2))
@@ -64,7 +67,7 @@ def make_plot_CO2RR_CO_pot(no_errorbars=True):
     """
     # run model for CO in CO2RR on Cu example
     out_plot = {}
-    for rgh in [1,30]:
+    for rgh in [1,15,30]:
         sdict['rghs'] = [rgh]
         out_plot.update(run_model_for_example({'sim_%i'%rgh:cdict}, \
             {'sim_%i'%rgh:sdict}, okey='U_SHE'))
@@ -80,19 +83,20 @@ def make_plot_CO2RR_CO_pot(no_errorbars=True):
     
     # prepare ls_args 
     clsk = {1:clrs['darkblue'], 1.1:clrs['azurblue'], 1.2:clrs['lightblue2'], 
-        1.3:clrs['lightblue3'], 1.4:'b',
+        1.3:clrs['lightblue3'], 1.4:'b', 15:'r',
         30:'r', 30.1:clrs['orange'], 32:clrs['darkyellow'],
         198:clrs['darkred'], 475.0:clrs['darkred']}
 
     ls_args = {k:dict(ls='--', marker='x', color=clsk[rghCO[k]]) for k in selCO}
-    for rgh in [1,30]:
-        ls_args.update({'sim_%i'%rgh:dict(ls='-', lw=2.5, color=clsk[rgh])})
+    ls_args.update({'sim_1':dict(ls='-', lw=2.5, color=clsk[1])})
+    for rgh in [15,30]:
+        ls_args.update({'sim_%i'%rgh:dict(ls='-', lw=1.0, color=clsk[rgh])})
 
     # prepare extra-legend
     extraleg = {r'Cu(111) $\rho=$1':dict(ls='--', marker='x', color=clsk[1.2]),
         r'pc-Cu $\rho=$1':dict(ls='--', marker='x', color=clsk[1.1]),
         r'OD-Cu $\rho=$30':dict(ls='--', marker='x', color=clsk[30.1]),
-        r'OD-Cu $\rho=$32':dict(ls='--', marker='x', color=clsk[32]),
+        r'OD-Cu $\rho=$16.3':dict(ls='--', marker='x', color=clsk[32]),
         r'model':dict(ls='-', color='r'),
     }
 

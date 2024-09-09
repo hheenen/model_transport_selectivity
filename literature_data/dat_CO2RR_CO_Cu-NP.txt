@@ -1,4 +1,4 @@
-# data from 10.1038/s41929-022-00757-8 with roughness 157.2, faradaic efficiencies given if not otherwise indicated
+# data from 10.1038/s41929-022-00757-8 with roughness 305.1 (capacitive), faradaic efficiencies given if not otherwise indicated
 # U_SHE  I(mA/cm2)  Hydrogen  Ethylene  Acetate  Ethanol  n-propanol  sel Ac / C2  sig-sel
 -1.336000e+00 7.942000e+01 1.800000e-01 3.600000e-01 9.000000e-02 2.500000e-01 1.800000e-01 1.978022e-01 6.877504e-02
 -1.396000e+00 1.277200e+02 2.000000e-01 3.800000e-01 1.100000e-01 2.800000e-01 1.100000e-01 2.307692e-01 4.704910e-03

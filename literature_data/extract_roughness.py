@@ -14,9 +14,12 @@ to exclude sensitivity of current to reaction design, pH, etc.
 import os, sys
 import numpy as np
 # clean this part up still
+sys.path.append("/Users/heenen/Nextcloud/DTU_related/Publications/Acetate_Selectivity/co_acetate/experimental_data/COR_data_paper")
+from plot_paper_data import _load_pickle_file
 sys.path.append("/Users/heenen/Nextcloud/DTU_related/Publications/Acetate_Selectivity/co_acetate/experimental_data")
 from get_c2_selectivities import compute_C2_selectivity
 from scipy.optimize import curve_fit
+import yaml
 
 # plotting imports
 sys.path.append("../.")
@@ -34,19 +37,56 @@ def load_data():
     key_dict = dict(
         CORR_CuPd=["Cu-NP", "Cu3.4Pd", "Cu0.3Pd", "CuPd", "d-CuPd"],
         CORR_CuAg=["CuAg_0%", "CuAg_0.25%", "CuAg_0.5%", "CuAg_1%"],
+        CO2RR_SCs=["Huang-111","Huang-OD-Cu", "Huang-110", "Huang-100"], 
     )
     
     out = {}
     for dset in key_dict:
-        dset_dat = {k:np.loadtxt("dat_CO2RR_CO_%s.txt"%k)[:,[0,1]] \
+        # load full raw data (last two entries are always post-processed)
+        dset_dat = {k:np.loadtxt("dat_CO2RR_CO_%s.txt"%k)[:,:-2] \
             for k in key_dict[dset]}
         out.update({dset:dset_dat})
     return out
+            
+
+def limit_curr(dj, clim):
+    """
+      helper function to remove data points w. current densities above 
+      a certain clim
+
+    """
+    for k in dj:
+        ind_ll = np.where(dj[k][:,1] <= clim)[0]
+        dj[k] = dj[k][ind_ll,:]
+    return dj
+
+
+def remove_HER_from_curr(dj):
+    """
+      helper function to HER current from total current
+      this would leave only CO2RR current
+      NOTE: hard-coded to assume that the 3rd entry in dj[key] is Hydrogen FE
+
+    """
+    for k in dj:
+        # compute partial current by factoring-out the hydrogen FE
+        fe = dj[k][:,2:]
+        fe_tot = fe.sum(axis=1)
+        fe_cor = fe[:,1:].sum(axis=1)
+        j_cor = dj[k][:,1] * (fe_cor/fe_tot)
+        dj[k] = np.array([dj[k][:,0], j_cor]).T
+    return dj
 
 
 def fit_and_refit_exp_rgh(dj):
     """
-        helper function to fit experimental data against y = a * np.exp(b*x)
+        helper function to fit experimental U vs. J data against 
+        y = a * np.exp(b*x)
+        --
+        note that alternatively one could also fit against 
+        ln y = ln a + a*b; but equally robust and leads to over-emphasis of 
+        low-overpotential region that behaves funny for e.g. SC data
+        --
         dj = dictionary with data-sets for different catalyst
     
     """
@@ -103,7 +143,7 @@ def average_roughness_from_fits(popt_refit):
     return rrgh, rrgh_std
 
 
-def plot_exp_fit(fname, dj, dpopt, verbose=True):
+def plot_exp_fit(fname, dj, dpopt, verbose=True, save_file=True):
     """
       function to plot data of exponential fits  
       
@@ -118,6 +158,8 @@ def plot_exp_fit(fname, dj, dpopt, verbose=True):
         can also be single dict for single plot
       verbose : bool
         option to print to std-out
+      save_file : bool
+        option to save plots
     """
     # check if single set or list of sets - adjust figure layout
     if type(dpopt) is dict:
@@ -142,10 +184,13 @@ def plot_exp_fit(fname, dj, dpopt, verbose=True):
         _plot_fit(ax[i], dj, dpopt[i])
 
     # output
-    if fname[0] != '_':
-        fname = '_'+fname
-    writefig("plot_fit%s"%fname, write_pdf=False, write_png=True)
-    if verbose:
+    if save_file:
+        if fname[0] != '_':
+            fname = '_'+fname
+        writefig("plot_fit%s"%fname, folder='roughness_estimates', \
+            write_pdf=False, write_png=True)
+    
+    elif verbose:
         plt.show()
     plt.close(fig)
 
@@ -178,7 +223,7 @@ def _plot_fit(ax, dj, dpopt):
     ax.set_ylabel(r"j (mA cm$^{-2}$)")
     
 
-def print_pretty_table(fname, rrgh, rrgh_std, m, verbose=True):
+def print_pretty_table(fname, rrgh, rrgh_std, m, verbose=True, save_file=True):
     ''' 
       function to output data in a ordered way
       
@@ -192,6 +237,8 @@ def print_pretty_table(fname, rrgh, rrgh_std, m, verbose=True):
         output from `average_roughness_from_fits`
       verbose : bool
         option to print to std-out
+      save_file : bool
+        option to save plots
     
     '''
     # header
@@ -209,13 +256,14 @@ def print_pretty_table(fname, rrgh, rrgh_std, m, verbose=True):
         print(so)
 
     # save in file
-    if fname[0] != '_':
-        fname = '_'+fname
-    with open("output/roughness_fit%s.txt"%fname,'w') as out:
-        out.write(so)
+    if save_file:
+        if fname[0] != '_':
+            fname = '_'+fname
+        with open("roughness_estimates/roughness_fit%s.txt"%fname,'w') as out:
+            out.write(so)
         
 
-def main_rgh_estimates(dj, fname="", m=1, verbose=True):
+def rgh_estimates(dj, fname="", m=1, verbose=True, save_files=True):
     ''' 
       main function to perform roughness estimates
       
@@ -229,13 +277,16 @@ def main_rgh_estimates(dj, fname="", m=1, verbose=True):
         scaling factor for relative roughness to fit to model
       verbose : bool
         whether to print and show plots
+      save_files : bool
+        option to save plots and txt files
 
     '''
     # perform full and partial exp fit to current 
     popt_full, popt_refit = fit_and_refit_exp_rgh(dj) 
 
     # plot to document fit 
-    plot_exp_fit(fname, dj, [popt_full]+[popt_refit[k] for k in popt_refit], verbose=verbose)
+    plot_exp_fit(fname, dj, [popt_full]+[popt_refit[k] for k in popt_refit], \
+        verbose=verbose, save_file=save_files)
 
     
     # NOTE: this part is temporary for full-fit roughness comparison
@@ -249,7 +300,10 @@ def main_rgh_estimates(dj, fname="", m=1, verbose=True):
     # obtain relative roughness averages and stds
     rrgh, rrgh_std = average_roughness_from_fits(popt_refit)
 
-    print_pretty_table(fname, rrgh, rrgh_std, m=m, verbose=verbose)
+    print_pretty_table(fname, rrgh, rrgh_std, m=m, verbose=verbose, \
+        save_file=save_files)
+
+    return rrgh, rrgh_std
 
 
 if __name__ == "__main__":
@@ -265,26 +319,80 @@ if __name__ == "__main__":
     # (x) check tot - NOTE tot fit depends on RHE/SHE --> very unstable
     # (x) check Jahed's code --> same code, small differences in values mostly due to different normalization (after averaging); logic and argumentatitve
     # (x) add to reading CVS --> move data-reading function out of the function
-    # ( ) integrate this function into repo
-    # ( ) add HER option
-    # ( ) check tot with HER
-    # ( ) add Huang estimates! --> careful HER exclusion may require omittance of high overpotential region; look at fits --> need to include CVS data in repo
+    # (x) integrate this function into repo
+    # (x) add Huang estimates! Transport lmitations?--> need to include CVS data in repo; what about transport
+    # (x) add HER option - add as function to run on loaded data
+    # (x) check tot with HER
+    # (x) careful HER exclusion may require omittance of high overpotential region; look at fits 
+    # (x) replot Fig. 4 --> better read-out
+    # (x) replot Fig. 3b
+    # (x) add new data into dat-files --> change noted roughnesses only list capacitances
     # ( ) also add selectivity calculation
-    # ( ) auto-detect 'm' ?
+
+    # ( ) auto-detect 'm' ? --> no time
 
     # ( ) prepare correction!
 
-    # data load function: load all data and then distinguish Ag/Pd
 
+### # TODO: delete when not needed anymore
+### def get_USHE(data):
+###     urhe = data['V_RHE']
+###     ushe[:,0] -= 0.059 * float(data['pH'])
+###     return ushe
+
+### dpath = "../../../../DTU_related/Publications/Acetate_Selectivity/co_acetate/experimental_data/COR_data_paper"
+### dat = _load_pickle_file(dpath+"/Huang_CO2R/Huang_CO2R.pkl")
+### print(dat['100'].keys())
+### # U_SHE  I(mA/cm2)  Methane  Ethylene  CO  Hydrogen  Formate  Ethanol  Acetate  sel CO / C1+C2  sig-sel
+### keys = ['V_RHE','I(mA/cm2)', 'Hydrogen', 'Methane', 'Ethylene', 'CO', 'Formate', 'Ethanol', 'Acetate']
+### for key in ['100', '110']:
+###     vshe = dat[key]['V_RHE'][:,0] - 0.059 * float(dat[key]['pH'])
+###     out =  np.zeros((vshe.size, len(keys)+2))
+###     out[:,0] = vshe
+###     for i in range(1,len(keys)):
+###         out[:,i] = dat[key][keys[i]][:,0]
+###     np.savetxt("Huang_%s.txt"%key, out, fmt='%.6e')
+
+
+    ### remove HER option ###
+    # we left this option in, as it makes in principle sense for 
+    # alloy data (Pd/Ag perfrom HER) - but it cannot be consistently applied to 
+    # all data-sets (no HER data or SC which suffer from transport effects)
+    remove_HER = False # left this option in, however, data inconsist
 
     # hardcoded m-values
-    ms = {"CORR_CuPd":30, "CORR_CuAg":80}
+    ms = {"CORR_CuPd":30, "CORR_CuAg":80, "CO2RR_SCs":1}
+    alloy_data = {}
 
     # load and iterate through data
     out = load_data()
-    for data_identifier in ["CORR_CuPd", "CORR_CuAg"]:
+    for data_identifier in ["CORR_CuPd", "CORR_CuAg", "CO2RR_SCs"]:
         dj = out[data_identifier]
-        main_rgh_estimates(dj, data_identifier, m=ms[data_identifier], verbose=True)
+        
+        if remove_HER:
+            # reduce data to CO2RR current
+            dj = remove_HER_from_curr(dj)
+        else:     
+            # reduce data to total current
+            dj = {k:dj[k][:,[0,1]] for k in dj}
+        
+        # if H-cell, limit current density to 10 mA/cm2
+        # due to mass-transport limitations
+        if data_identifier == "CO2RR_SCs":
+            dj = limit_curr(dj, 10) 
+        
+        # perform roughness estimate
+        rrgh, rrgh_std = rgh_estimates(dj, data_identifier, \
+            m=ms[data_identifier], verbose=True, save_files=True)
 
+        # save scaled alloy data for plotting
+        if data_identifier.find("Pd") != -1 or \
+            data_identifier.find("Ag") != -1:
+            alloy_data.update({k:float(rrgh[k]*ms[data_identifier]) \
+                for k in rrgh})
+
+    # save alloy-data for plotting in yaml file
+    with open('roughness_estimates/alloy_data.yml', 'w') as outfile:
+        yaml.dump(alloy_data, outfile, default_flow_style=False)
 
 

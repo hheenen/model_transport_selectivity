@@ -3,6 +3,7 @@
 from header import *
 from model_Sel_CORAc.simtools import potsweep_rgh_pH, make_facet_mkin_model_gpaw 
 from model_Sel_CORAc.transport.flux_conversion import f2j
+import yaml
 
 
 def load_literature_CO2RR_COsel_data():
@@ -191,9 +192,10 @@ def plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, derr, plot_SI)
         ax.annotate('(b)', xy=(0.04, 0.95), xycoords='figure fraction')
     
     if not plot_SI:
-        ax.set_xlim(ax.get_xlim()[0], 310)
-        t = ax.text(105, 25, "alloying",
-            ha="center", va="center", rotation=0, size=8,
+        ax.set_xlim(-3, 320)
+        #ax.set_xlim(ax.get_xlim()[0], 310)
+        t = ax.text(75, 30, "alloying",
+            ha="center", va="center", rotation=-30, size=8,
             bbox=dict(boxstyle="larrow,pad=0.3",
                       fc="none", ec="k", lw=1))
         add_sketch(ax, r'CO', r'C$_{2\!+}$', r'  Ac', dxy=(0.2, -0.2))
@@ -235,9 +237,16 @@ def make_plot_CO2RR_Ac_rgh(no_errorbars=True):
     if no_errorbars: # only plot on choice for visibility
         err = {}
     
-    rgh_i = {'Cu-NP': 157.22, 'CuPd': 43.82, 'd-CuPd': 27.31, 'Cu3.4Pd': 75.35, 
-        'Cu0.3Pd': 1.20, 'CuAg_0%': 188.20, 'CuAg_0.25%': 19.12, 
-        'CuAg_0.5%': 60.97, 'CuAg_1%': 5.0}
+    # previous data - from unnoticed typo in code!
+    # rgh_i = {'Cu-NP': 157.22, 'CuPd': 43.82, 'd-CuPd': 27.31, 'Cu3.4Pd': 75.35, 
+    #    'Cu0.3Pd': 1.20, 'CuAg_0%': 188.20, 'CuAg_0.25%': 19.12, 
+    #    'CuAg_0.5%': 60.97, 'CuAg_1%': 5.0}
+
+    # load roughness data from current estimate (corrected)
+    with open("../literature_data/roughness_estimates/alloy_data.yml", 'r') as f:
+        rgh_i = yaml.load(f, Loader=yaml.SafeLoader)
+
+    # from literature
     rgh_c = {'Cu-NP': 305.1, 'CuPd': 89.3, 'd-CuPd': 353.1, 'Cu3.4Pd': 357.9, 'Cu0.3Pd': 419.3}
 
     rgh_i = {kf(k):rgh_i[k] for k in rgh_i}
