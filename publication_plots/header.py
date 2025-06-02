@@ -72,7 +72,23 @@ def add_sketch(ax, a1, a2, a3, dxy=(0.0,0.0)):
             arrowprops=dict(arrowstyle="->", connectionstyle="arc3"))
     ax.annotate(r'', xy=(0.58+dx,0.7+dy), xytext=(0.50+dx,0.53+dy), xycoords='axes fraction',
             arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=0.5"))
+
+
+def add_sketch_tight(ax, a1, a2, a3, dxy=(0.0,0.0)):
+    """
+      helper-function to add reaction sketch into figures
+
+    """
+    dx, dy = dxy
+    ax.annotate(a1, xy=(0.495+dx,0.5+dy), xycoords='axes fraction', ha='right', size=9)
+    ax.annotate(a2, xy=(0.635+dx,0.5+dy), xycoords='axes fraction', ha='left', size=9)
+    ax.annotate(a3, xy=(0.52+dx,0.70+dy), xycoords='axes fraction', ha='left', size=9)
+    ax.annotate(r'', xy=(0.65+dx,0.53+dy), xytext=(0.49+dx,0.53+dy), xycoords='axes fraction',
+            arrowprops=dict(arrowstyle="->", connectionstyle="arc3"))
+    ax.annotate(r'', xy=(0.58+dx,0.7+dy), xytext=(0.50+dx,0.53+dy), xycoords='axes fraction',
+            arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=0.5"))
     
+
 def add_sketch2(ax, a1, a2, a3, dxy=(0.0,0.0)):
     """
       helper-function to add reaction sketch into figures

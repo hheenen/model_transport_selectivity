@@ -177,25 +177,28 @@ def plot_CO2RR_Acdh_rgh(filename, dat_i, dat_c, sim_dat, ls_args, derr, plot_SI)
     
     if plot_SI:
         for k in dat_c:
-            ax.plot(dat_c[k][:,0], dat_c[k][:,1], marker='x', color=ls_args[k]['color'], alpha=0.1)
-            ax.annotate('', xy=dat_i[k][0], xytext=dat_c[k][0], arrowprops={"arrowstyle":'->', "color":ls_args[k]['color'], 'alpha':0.1})
+            ax.plot(dat_c[k][:,0], dat_c[k][:,1], marker='x', color=ls_args[k]['color'], alpha=0.5)
+            ax.annotate('', xy=dat_i[k][0], xytext=dat_c[k][0], arrowprops={"arrowstyle":'->', "color":ls_args[k]['color'], 'alpha':0.3})
     
-    anargs = dict(xytext=(380,35), alpha=0.2, size=7, arrowprops={"arrowstyle":'->', "color":'k', 'alpha':0.2})
+    anargs = dict(xytext=(380,35), alpha=0.2, size=7, arrowprops={"arrowstyle":'->', "color":'k', 'alpha':0.6})
     if plot_SI:
         ax.annotate(r'$\rho_C^{\mathrm{foil}}$', xy=(380,65), **anargs)
         ax.annotate(r'$\rho_C^{\mathrm{foil}}$', xy=(310,25), **anargs)
     
-    anargs = dict(xytext=(2,25), alpha=0.5, size=7, arrowprops={"arrowstyle":'->', "color":'k', 'alpha':0.5})
+    anargs = dict(xytext=(2,25), alpha=0.5, size=7, arrowprops={"arrowstyle":'->', "color":'k', 'alpha':0.6})
     if plot_SI:
-        ax.annotate(r'$\rho_I^{\mathrm{rel}}$', xy=(15,45), **anargs)
-        ax.annotate(r'$\rho_I^{\mathrm{rel}}$', xy=(160,22), **anargs)
+       #ax.annotate(r'$\rho_I^{\mathrm{rel}}$', xy=(15,45), **anargs)
+       #ax.annotate(r'$\rho_I^{\mathrm{rel}}$', xy=(160,22), **anargs)
+        ax.annotate(r'$\rho_I^{\mathrm{rel}}$', xy=(20,65), **anargs)
+        ax.annotate(r'$\rho_I^{\mathrm{rel}}$', xy=(100,22), **anargs)
         ax.annotate('(b)', xy=(0.04, 0.95), xycoords='figure fraction')
     
     if not plot_SI:
         ax.set_xlim(-3, 320)
         #ax.set_xlim(ax.get_xlim()[0], 310)
-        t = ax.text(75, 30, "alloying",
-            ha="center", va="center", rotation=-30, size=8,
+        t = ax.text(65, 30, "alloying",
+            ha="center", va="center", size=8,
+            #ha="center", va="center", rotation=-30, size=8,
             bbox=dict(boxstyle="larrow,pad=0.3",
                       fc="none", ec="k", lw=1))
         add_sketch(ax, r'CO', r'C$_{2\!+}$', r'  Ac', dxy=(0.2, -0.2))
@@ -219,8 +222,8 @@ def make_lsargs():
     cls2 = plt.cm.summer(np.linspace(0,1,4))
     ls_args.update({kf(akeys[i]):dict(ls='--', marker='o', color=cls2[i]) for i in range(len(akeys)-1)})
     
-    for i in [1,2]:
-        ls_args[kf(akeys[i])].update({'alpha':0.2})
+   #for i in [1,2]:
+   #    ls_args[kf(akeys[i])].update({'alpha':0.2})
     ls_args.update({'Cu-NP':dict(ls='--', marker='x', markersize=7, markeredgewidth=2, color='orange')})
     ls_args.update({r'Cu$_2$O':dict(ls='--', marker='o', color='tab:red')})
 
@@ -243,8 +246,12 @@ def make_plot_CO2RR_Ac_rgh(no_errorbars=True):
     #    'CuAg_0.5%': 60.97, 'CuAg_1%': 5.0}
 
     # load roughness data from current estimate (corrected)
-    with open("../literature_data/roughness_estimates/alloy_data.yml", 'r') as f:
-        rgh_i = yaml.load(f, Loader=yaml.SafeLoader)
+    try:
+        with open("../literature_data/roughness_estimates/alloy_data.yml", 'r') as f:
+            rgh_i = yaml.load(f, Loader=yaml.SafeLoader)
+    except FileNotFoundError:
+        print("need to excecute `literature_data/compute_roughness.py` first")
+        
 
     # from literature
     rgh_c = {'Cu-NP': 305.1, 'CuPd': 89.3, 'd-CuPd': 353.1, 'Cu3.4Pd': 357.9, 'Cu0.3Pd': 419.3}
